@@ -7,9 +7,12 @@
   ],
   "license": "ISC",
   "author": "cyborg",
-  "type": "module",   
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
