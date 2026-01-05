@@ -4,7 +4,7 @@ const app = express();
 app.get("/", (req, res) => {
   res.send("Welcome to home page !");
 });
-app.get("/about", (reques, response) => {
-  response.send("Welcome to About Page.");
+app.get("/test", (reques, response) => {
+  response.send("working api");
 });
 export default app;
