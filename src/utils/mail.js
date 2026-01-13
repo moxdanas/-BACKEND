@@ -1,6 +1,5 @@
 import { text } from "express";
 import Mailgen from "mailgen";
-
 import nodemailer from "nodemailer";
 
 const sendEmail = async (options) => {
