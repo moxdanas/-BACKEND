@@ -14,11 +14,11 @@ const sendEmail = async (options) => {
   const emailHtml = mailGenerator.generate(options.mailgenContent);
 
   const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_SMTP_HOST,
-    port: process.env.MAIL_SMTP_PORT,
+    host: process.env.MAILTRAP_SMTP_HOST,
+    port: process.env.MAILTRAP_SMTP_PORT,
     auth: {
-      user: process.env.MAIL_SMTP_USER,
-      pass: process.env.MAIL_SMTP_PASS,
+      user: process.env.MAILTRAP_SMTP_USER,
+      pass: process.env.MAILTRAP_SMTP_PASS,
     },
   });
 
@@ -30,7 +30,7 @@ const sendEmail = async (options) => {
     html: emailHtml,
   };
   try {
-    await transporter.sendEmail(mail);
+    await transporter.sendMail(mail);
   } catch (error) {
     console.error(
       "Email service fialed silently , Make sure that you have provided your mail trap credentials in the .env file !"
