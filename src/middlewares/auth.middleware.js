@@ -1,6 +1,7 @@
 import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/api-error.js";
-import { asyncHandler } from "../utils/async-handler.js";
+import jwt from "jsonwebtoken";
+import asyncHandler from "../utils/async-handler.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   const token =
@@ -12,7 +13,10 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   }
   try {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const user = await User.findById(decodedToken.findById?._id).select(
+    // payload includes `_id` directly; earlier code attempted to access
+    // `decodedToken.findById?._id`, which is always undefined. That resulted in
+    // `User.findById(undefined)` returning null and an erroneous 401 response.
+    const user = await User.findById(decodedToken._id).select(
       "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
     );
     if (!user) {
