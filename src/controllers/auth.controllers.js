@@ -262,11 +262,4 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export {
-  registerUser,
-  login,
-  logoutUser,
-  getCurrentUser,
-  verifyEmail,
-  resendEmailVerification,
-};
+
