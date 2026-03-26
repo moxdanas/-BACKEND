@@ -1,2 +1,3 @@
 git_bix_ignore_this
 .env
+node_modules
