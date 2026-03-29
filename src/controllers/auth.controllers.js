@@ -358,6 +358,6 @@ export {
   resendEmailVerification,
   refreshAccessToken,
   forgotPasswordRequest,
-  resetForgotPassword,
   changeCurrentPassword,
+  resetForgotPassword,
 };
