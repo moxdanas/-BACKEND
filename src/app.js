@@ -7,7 +7,6 @@ const app = express();
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
-
 app.use(cookieParser());
 
 //cors configurations
@@ -23,12 +22,17 @@ app.use(
 //import the routes
 import healthCheckRouter from "./routes/healthCheck.routes.js";
 import authRouter from "./routes/auth.routes.js";
-
+//get
 app.use("/api/v1/healthcheck", healthCheckRouter);
+//post
 app.use("/api/v1/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to home page !");
+});
+
+app.get("/anas", (req, res) => {
+  res.send("Welcome to Anas Page !");
 });
 
 export default app;
