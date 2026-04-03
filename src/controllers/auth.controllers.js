@@ -62,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
+    "-password -refreshToken -emailVerificationToken -emailVerificationExpiry ",
   );
 
   if (!createdUser) {
@@ -175,7 +175,9 @@ const verifyEmail = asyncHandler(async (req, res, next) => {
   user.isEmailVerified = true;
   await user.save({ validateBeforeSave: false });
 
-  return res.status(200).json(
+  return res
+  .status(200)
+  .json(
     new ApiResponse(
       200,
       {
