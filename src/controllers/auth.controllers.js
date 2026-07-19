@@ -8,6 +8,7 @@ import {
   sendEmail,
 } from "../utils/mail.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -157,11 +158,11 @@ const verifyEmail = asyncHandler(async (req, res, next) => {
   if (!verificationToken) {
     throw new ApiError(400, "Email verification token is missing!");
   }
-  let hashedToken = crypto
-    .createHash(256)
+  const hashedToken = crypto
+    .createHash("sha256")
     .update(verificationToken)
     .digest("hex");
-  const user = await user.findOne({
+  const user = await User.findOne({
     emailVerificationToken: hashedToken,
     emailVerificationExpiry: { $gt: Date.now() },
   });
@@ -175,9 +176,7 @@ const verifyEmail = asyncHandler(async (req, res, next) => {
   user.isEmailVerified = true;
   await user.save({ validateBeforeSave: false });
 
-  return res
-  .status(200)
-  .json(
+  return res.status(200).json(
     new ApiResponse(
       200,
       {
@@ -194,7 +193,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User doesnot exist!");
   }
-  if (!user.isEmailVerified) {
+  if (user.isEmailVerified) {
     throw new ApiError(409, "Email is already verified.");
   }
 
@@ -250,19 +249,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save();
 
-    return (
-      res
-        .status(200)
-        .cookie("AccessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options),
-      json(
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
         new ApiResponse(
           200,
           { accessToken, refreshToken: newRefreshToken },
           "access token refreshed.",
         ),
-      )
-    );
+      );
   } catch (error) {
     throw new ApiError(401, "Invalid refresh token !");
   }
@@ -294,8 +291,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
     ),
   });
 
-  return;
-  res
+  return res
     .status(200)
     .json(
       new ApiResponse(
@@ -310,12 +306,12 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
   const { resetToken } = req.params;
   const { newPassword } = req.body;
 
-  let hashedToken = crypto
+  const hashedToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
 
-  await User.findOne({
+  const user = await User.findOne({
     forgotPasswordToken: hashedToken,
     forgotPasswordExpiry: { $gt: Date.now() },
   });
@@ -335,7 +331,11 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-  const user = User.findById(req.user?._id);
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(404, "User doesnot exist!");
+  }
 
   const isPasswordValid = await user.isPasswordCorrect(oldPassword);
 
